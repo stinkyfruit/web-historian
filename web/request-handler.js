@@ -10,14 +10,15 @@ exports.handleRequest = function (req, res) {
 
   console.log(req.url);
   console.log(req.method);
-  console.log(req.headers);
+  //console.log(req.headers);
 
   fs.readFile(archive.paths.siteAssets+'/index.html', 'utf8', function(error, data){
     if(error) { console.log(error);}
 //    console.log(__dirname);
 //    console.log(path);
     //console.log(data);
-    archive.addUrlToList("www.google.com");
+//    archive.readListOfUrls();
+//    archive.isUrlInList('www.google.com');
     res.writeHead(200);
     res.write(data);
 
