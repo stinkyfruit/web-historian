@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -42,15 +43,34 @@ exports.isUrlInList = function(url, cb){
 
 };
 
-exports.addUrlToList = function(url){
+exports.addUrlToList = function(url, cb){
   fs.appendFile(exports.paths.list, url+"\n", function(err){
     if(err) throw err;
     console.log("The data to append was appended to the file!");
+    cb();
   });
 };
 
-exports.isUrlArchived = function(){
+exports.isUrlArchived = function(url, cb){
+  fs.readFile(exports.paths.archivedSites+'/'+url, 'utf-8', function(err, data){
+    if(err) {
+      cb(false) ;
+    } else {
+      cb(true);
+    }
+  });
 };
 
+
 exports.downloadUrls = function(){
+  exports.readListOfUrls( function(data) {
+    _.each(data, function(item) {
+      request(item, function (error, response, body) {
+        console.log(response);
+        // if (!error && response.statusCode == 200) {
+        //   console.log("work");// Show the HTML for the Google homepage.
+        // }
+      });
+    });
+  });
 };

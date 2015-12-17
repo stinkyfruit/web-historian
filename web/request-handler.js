@@ -14,11 +14,16 @@ exports.handleRequest = function (req, res) {
 
   fs.readFile(archive.paths.siteAssets+'/index.html', 'utf8', function(error, data){
     if(error) { console.log(error);}
+
+    archive.downloadUrls();
 //    console.log(__dirname);
 //    console.log(path);
     //console.log(data);
 //    archive.readListOfUrls();
 //    archive.isUrlInList('www.google.com');
+//    archive.isUrlArchived('www.example.com', function(data){
+//      console.log(data);
+//    });
     res.writeHead(200);
     res.write(data);
 
