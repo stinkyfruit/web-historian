@@ -47,7 +47,7 @@ exports.addUrlToList = function(url, cb){
   fs.appendFile(exports.paths.list, url+"\n", function(err){
     if(err) throw err;
     console.log("The data to append was appended to the file!");
-    cb();
+//    cb();
   });
 };
 
@@ -62,15 +62,18 @@ exports.isUrlArchived = function(url, cb){
 };
 
 
-exports.downloadUrls = function(){
-  exports.readListOfUrls( function(data) {
-    _.each(data, function(item) {
-      request(item, function (error, response, body) {
-        console.log(response);
-        // if (!error && response.statusCode == 200) {
-        //   console.log("work");// Show the HTML for the Google homepage.
-        // }
-      });
-    });
-  });
+exports.downloadUrls = function(cb){
+
+exports.readListOfUrls(function(urls){
+ _.each(urls, function(url){
+   //log the url to be requested
+   //console.log(url);
+   //request url & pipe
+
+   if(url.length > 3){
+     request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + "/" + url));
+   }
+
+ });
+});
 };

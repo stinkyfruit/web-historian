@@ -11,3 +11,29 @@ fs.appendFile('message.txt', 'data to append', function (err) {
 fs.access('/etc/passwd', fs.R_OK | fs.W_OK, function (err) {
   console.log(err ? 'no access!' : 'can read/write');
 });
+
+
+
+exports.downloadUrls = function(){
+  exports.readListOfUrls( function(data) {
+    _.each(data, function(item) {
+      request(item, function (error, response, body) {
+        console.log(response);
+
+
+      });
+    });
+  });
+};
+
+
+
+request(item, function (error, response, body) {
+  console.log(response);
+});
+
+fs.writeFile(exports.paths.archivedSites + '/' + url, 'Hello Node.js', function (err) {
+  console.log(err);
+  if (err) throw err;
+  console.log('It\'s saved!');
+});
