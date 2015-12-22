@@ -47,17 +47,19 @@ exports.addUrlToList = function(url, cb){
   fs.appendFile(exports.paths.list, url+"\n", function(err){
     if(err) throw err;
     console.log("The data to append was appended to the file!");
-//    cb();
   });
 };
-
+// addUrlToList(url, function(){
+    // do something after the thing has been added
+    // res.writeHead(302, redirect toloading page)
+    //res.end(loading.html);
+//})
 exports.isUrlArchived = function(url, cb){
-  fs.readFile(exports.paths.archivedSites+'/'+url, 'utf-8', function(err, data){
-    if(err) {
-      cb(false) ;
-    } else {
-      cb(true);
-    }
+  //readDir
+  fs.readdir(exports.paths.archivedSites, function(err, data){
+    if(err)throw err;
+  
+    cb(_.contains(data, url));
   });
 };
 
