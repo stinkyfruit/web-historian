@@ -3,6 +3,11 @@ var path = require('path');
 var _ = require('underscore');
 var request = require('request');
 
+exports.sendRedirect = function(response, location, status){
+  status = status || 302;
+  response.writeHead(status, {Location: location});
+};
+
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -28,34 +33,28 @@ exports.initialize = function(pathsObj){
 
 exports.readListOfUrls = function(cb){
   fs.readFile(exports.paths.list, 'utf-8', function(err, data){
-    //currently returning last \n in sites.txt
     cb(data.split('\n'));
   });
 };
 
 exports.isUrlInList = function(url, cb){
-  //console.log( archive.readListOfUrls() );
   exports.readListOfUrls(function(data){
     cb(_.contains(data, url));
   });
 
-  //console.log( _.contains(list, url) );
 
 };
 
 exports.addUrlToList = function(url, cb){
-  fs.appendFile(exports.paths.list, url+"\n", function(err){
+  fs.appendFile(exports.paths.list, url+"\n", function(err, file){
     if(err) throw err;
+    cb();
     console.log("The data to append was appended to the file!");
   });
 };
-// addUrlToList(url, function(){
-    // do something after the thing has been added
-    // res.writeHead(302, redirect toloading page)
-    //res.end(loading.html);
-//})
+
+
 exports.isUrlArchived = function(url, cb){
-  //readDir
   fs.readdir(exports.paths.archivedSites, function(err, data){
     if(err)throw err;
   
@@ -68,9 +67,6 @@ exports.downloadUrls = function(cb){
 
 exports.readListOfUrls(function(urls){
  _.each(urls, function(url){
-   //log the url to be requested
-   //console.log(url);
-   //request url & pipe
 
    if(url.length > 3){
      request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + "/" + url));

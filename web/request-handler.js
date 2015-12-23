@@ -13,9 +13,8 @@ var headers = {  "access-control-allow-origin": "*",
 
 exports.handleRequest = function (req, res) {
 
-  // console.log(req.url);
-  // console.log(req.method);
   if(req.method === "GET") {
+    //if url is /, return the homepage
     if(req.url === '/'){
       fs.readFile(archive.paths.siteAssets+'/index.html', 'utf-8', function(error, data){
         if(error) { console.log(error);}
@@ -23,11 +22,12 @@ exports.handleRequest = function (req, res) {
         res.end(data);
       });
     }
-    //req.url === /www.google.com
     var url = req.url.slice(1);
+    //check to see if site is archived
     archive.isUrlArchived(url, function(data){
       //if url is in archive
       if(data) {
+        //load the page
         fs.readFile(archive.paths.archivedSites+req.url, 'utf-8', function(error, data){
 
         if(error) throw error;
@@ -38,51 +38,52 @@ exports.handleRequest = function (req, res) {
       } else {
         fs.readFile(archive.paths.siteAssets+'/404.html', 'utf-8', function(error, data){
           if(error) { console.log(error);}
+          //send a 404
           res.writeHead(404, headers);
           res.end(data);
         });
       }
     });
   }
-  
+  //if method is post
   if(req.method === 'POST') {
-    statusCode = 201;
-    console.log("POSTINGGGG");
-    //parse through data coming in
-    //push it to storage / results
     var str = "";
     req.on('data', function(chunk){
-      //console.log(chunk);
       str += chunk;
     });
+    //perform action when the request is over
     req.on('end', function(){
-      console.log(str);
       var site = str.substring(4);
       archive.isUrlArchived(site, function(data){
-      //if url is in archive
         if(data) {
           fs.readFile(archive.paths.archivedSites+'/'+site, 'utf-8', function(error, data){
 
           if(error) throw error;
-          res.writeHead(200, headers);
+          res.writeHead(302, headers);
           res.end(data);
         });
-        }
-      });
-        //if url is not in archive
-
-      archive.isUrlInList(site, function(exists){
-        if(exists) {
-          console.log('it exists');
         } else {
-          archive.addUrlToList(site);
+          archive.isUrlInList(site, function(data){
+            fs.readFile(archive.paths.siteAssets+'/loading.html', 'utf-8', function(error, data){
+              if(error) { console.log(error);}
+              res.writeHead(302, headers);
+              res.end(data);
+            
+            });
+            if(!data) {
+              archive.addUrlToList(site, function(){
+                console.log('hELOO');
+                archive.sendRedirect(res, '/loading.html');
+                res.end(data);
+              });
+            }
+          });
         }
       });
     });
 
   }
 
-//response - you always send back status code, header(most), and data(most of the time)
   
  
 
